@@ -36,7 +36,7 @@ const camera = new THREE.PerspectiveCamera(
     100
 )
 scene.add (camera)
-camera.position.set(0, 0, 5)
+camera.position.set(-2, 2, 5)
 
 // Renderer
 const renderer = new THREE.WebGLRenderer({
@@ -54,18 +54,71 @@ controls.enableDamping = true
  ***********/
 
  //testsphere
-const sphereGeometry = new THREE.SphereGeometry(1)
-const sphereMaterial = new THREE.MeshNormalMaterial()
-const testSphere = new THREE.Mesh(sphereGeometry, sphereMaterial)
+const geometry = new THREE.BoxGeometry()
+const material = new THREE.MeshNormalMaterial()
+const mesh = new THREE.Mesh(geometry, material)
 
-scene.add(testSphere)
-testSphere.position.set(0, 0, 0)
+scene.add(mesh)
+
+//Plane
+
+const planeGeometry = new THREE.PlaneGeometry(10,10,50,50)
+const planeMaterial = new THREE.MeshBasicMaterial({
+    color: new THREE.Color('white'),
+    side: THREE.DoubleSide,
+    wireframe: true
+})
+const plane = new THREE.Mesh (planeGeometry, planeMaterial)
+plane.rotation.x = Math.PI * 0.5
+
+scene.add(plane)
+
+
 
 /******
  * UI *
  ******/
+
 //UI
 const ui = new dat.GUI()
+
+//UI  object
+const uiObject = {
+    speed:1,
+    distance:1,
+    rotationSpeed:1
+}
+
+//plane UI
+const planeFolder = ui.addFolder ('Plane')
+
+planeFolder
+    .add(planeMaterial, 'wireframe')
+    .name("Toggle Wireframe")
+
+//mesh UI
+const meshFolder = ui.addFolder('Sphere')
+
+meshFolder
+    .add(uiObject,'speed')
+    .min(0.1)
+    .max(10)
+    .step(0.1)
+    .name('speed')
+
+meshFolder
+    .add(uiObject, 'distance')
+    .min(0.1)
+    .max(10)
+    .step(0.1)
+    .name("distance")
+
+meshFolder
+    .add(uiObject, 'rotationSpeed')
+    .min(0)
+    .max(5)
+    .step(0.01)
+    .name('rotation speed')
 
 
 /******************
@@ -78,6 +131,12 @@ const animation = () =>
 {
     //Return elapsedTime
     const elapsedTime = clock.getElapsedTime()
+
+    //Animate mesh
+mesh.position.y = Math.sin(elapsedTime * uiObject.speed) * uiObject.distance
+
+// Rotate mesh
+mesh.rotation.y += uiObject.rotationSpeed * 0.01
 
     //Update OrbitControls
     controls.update()
