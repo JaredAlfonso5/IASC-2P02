@@ -68,32 +68,13 @@ cave.receiveShadow = true
 scene.add(cave)
 
 //Objects
-// Sphere Geometry
-const sphereGeometry = new THREE.SphereGeometry(0.75, 32, 32)
-const sphereMaterial = new THREE.MeshStandardMaterial({ color: 'orange' })
-
-// Left Sphere
-const sphere1 = new THREE.Mesh(sphereGeometry, sphereMaterial)
-sphere1.position.set(6, 1, -1)
-sphere1.castShadow = true
-scene.add(sphere1)
-
-// Right Sphere
-const sphere2 = new THREE.Mesh(sphereGeometry, sphereMaterial)
-sphere2.position.set(6, 1, 1)
-sphere2.castShadow = true
-scene.add(sphere2)
-
-
-// Cylinder Geometry
-const cylinderGeometry = new THREE.CylinderGeometry(0.25, 0.25, 2, 32)
-const cylinderMaterial = new THREE.MeshStandardMaterial({ color: 'gray' })
-
-const cylinder = new THREE.Mesh(cylinderGeometry, cylinderMaterial)
-cylinder.position.set(6, -1, 0)
-cylinder.rotation.x = Math.PI * 0.5
-cylinder.castShadow = true
-scene.add(cylinder)
+// Torus Knot
+const torusKnotGeometry = new THREE.TorusKnotGeometry(1, 0.2, 100, 16)
+const torusKnotMaterial = new THREE.MeshNormalMaterial()
+const torusKnot = new THREE.Mesh(torusKnotGeometry, torusKnotMaterial)
+torusKnot.position.set(15, 2.5, 0)
+torusKnot.castShadow = true
+scene.add(torusKnot)
 
 /***********
  ** LIGHTS**
@@ -120,11 +101,31 @@ scene.add(cylinder)
     const directionalLightHelper = new THREE.DirectionalLightHelper(directionalLight)
     //scene.add(directionalLightHelper)
 
+    /*********************
+    ** DOM INTERACTIONS **
+    **********************/
+
+    const domObject = {
+        part: 1
+    }
+
+    
+    //part-one
+    document.querySelector('#part-one').onclick = function(){
+        domObject.part = 1
+    }
+
+    //part-two
+    document.querySelector('#part-two').onclick = function(){
+        domObject.part = 2
+    }
+
 
 /******
  * UI *
  ******/
 //UI
+/*
 const ui = new dat.GUI()
 
 const lightPositionFolder = ui.addFolder ('Light Position')
@@ -142,7 +143,7 @@ lightPositionFolder
     .max(10)
     .step(0.1)
     .name('z')
-
+*/
 
 /******************
 ** ANIMATION LOOP**
@@ -155,10 +156,22 @@ const animation = () =>
     //Return elapsedTime
     const elapsedTime = clock.getElapsedTime()
 
-    //Animate Objects
-    sphere1.rotation.y = elapsedTime
-    sphere2.rotation.y = elapsedTime
-    cylinder.rotation.y = elapsedTime
+    //part-one
+    if(domObject.part === 1)
+    {
+        camera.position.set(6,0,0)
+        camera.lookAt(0,0,0)
+
+    }
+
+    //part-two
+    if(domObject.part === 2)
+    {
+        camera.position.set(25,1,0)
+        camera.lookAt(0,0,0)
+    }
+
+    
 
     //Update directionalLightHelper
     directionalLightHelper.update()
