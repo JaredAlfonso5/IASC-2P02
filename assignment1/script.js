@@ -106,7 +106,11 @@ scene.add(torusKnot)
     **********************/
 
     const domObject = {
-        part: 1
+        part: 1,
+        firstChange: false,
+        secondChange: false,
+        thirdChange: false,
+        fourthChange: false
     }
 
     
@@ -118,6 +122,26 @@ scene.add(torusKnot)
     //part-two
     document.querySelector('#part-two').onclick = function(){
         domObject.part = 2
+    }
+
+    //first-change
+    document.querySelector('#first-change').onclick = function() {
+        domObject.firstChange = true
+    }
+
+    //second-change
+    document.querySelector('#second-change').onclick = function() {
+        domObject.secondChange = true
+    }
+
+    //third-change
+    document.querySelector('#third-change').onclick = function() {
+        domObject.thirdChange = true
+    }
+
+    //fourth-change
+    document.querySelector('#fourth-change').onclick = function() {
+        domObject.fourthChange = true
     }
 
 
@@ -171,7 +195,29 @@ const animation = () =>
         camera.lookAt(0,0,0)
     }
 
-    
+    //first-change
+    if(domObject.firstChange)
+    {
+
+    }
+
+    //second-change
+       if(domObject.secondChange)
+    {
+
+    }
+
+    //third-change
+       if(domObject.thirdChange)
+    {
+
+    }
+
+    //fourth-change
+       if(domObject.fourthChange)
+    {
+  
+    }
 
     //Update directionalLightHelper
     directionalLightHelper.update()
