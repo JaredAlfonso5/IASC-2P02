@@ -68,13 +68,21 @@ cave.receiveShadow = true
 scene.add(cave)
 
 //Objects
-// Torus Knot
-const torusKnotGeometry = new THREE.TorusKnotGeometry(1, 0.2, 100, 16)
-const torusKnotMaterial = new THREE.MeshNormalMaterial()
-const torusKnot = new THREE.Mesh(torusKnotGeometry, torusKnotMaterial)
-torusKnot.position.set(15, 2.5, 0)
-torusKnot.castShadow = true
-scene.add(torusKnot)
+const boxGeometry = new THREE.BoxGeometry(5, 1, 1)
+const boxMaterial = new THREE.MeshStandardMaterial({ color: 'orange' })
+
+// First Prism
+const prism1 = new THREE.Mesh(boxGeometry, boxMaterial)
+prism1.position.set(15, 2.5, 0)
+prism1.castShadow = true
+scene.add(prism1)
+
+// Second Prism
+const prism2 = new THREE.Mesh(boxGeometry, boxMaterial)
+prism2.position.set(15, 2.5, 0)
+prism2.rotation.z = Math.PI / 2
+prism2.castShadow = true
+scene.add(prism2)
 
 /***********
  ** LIGHTS**
@@ -191,32 +199,32 @@ const animation = () =>
     //part-two
     if(domObject.part === 2)
     {
-        camera.position.set(25,1,0)
+        camera.position.set(25,3,5)
         camera.lookAt(0,0,0)
     }
 
     //first-change
     if(domObject.firstChange)
     {
-
+        prism2.rotation.z = elapsedTime
     }
 
     //second-change
        if(domObject.secondChange)
     {
-
+        prism1.rotation.x = elapsedTime
     }
 
     //third-change
        if(domObject.thirdChange)
     {
-
+        prism1.position.z = Math.sin(elapsedTime) * 20
     }
 
     //fourth-change
        if(domObject.fourthChange)
     {
-  
+        directionalLight.position.y = Math.sin(elapsedTime) * 20
     }
 
     //Update directionalLightHelper
