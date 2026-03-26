@@ -75,6 +75,8 @@ controls.enableDamping = true
 //Directional Light
 const directionalLight = new THREE.DirectionalLight(0x404040, 100)
 scene.add(directionalLight)
+directionalLight.position.set(5, 15, 5)
+
 
 /************
  ** MESHES **
@@ -83,28 +85,50 @@ scene.add(directionalLight)
 //cube geometry
 const cubeGeometry = new THREE.BoxGeometry(0.5, 0.5, 0.5)
 
-const drawCube = (height, params) =>
+const drawCube = (height, params, index = 0) =>
 {
     //create cube material
     const material = new THREE.MeshStandardMaterial({
         color: new THREE.Color(params.color)
     })
 
+    if(params.wireframe)
+    {
+        material.wireframe = true
+    }
 
     //Create cube
     const cube = new THREE.Mesh(cubeGeometry, material)
 
     //Position cube
-    cube.position.x = (Math.random() - 0.5) * params.diameter
-    cube.position.z = (Math.random() - 0.5) * params.diameter
+    if (params === uiObj.term3) {
+        // GRID LOGIC
+        const gridSize = Math.ceil(Math.sqrt(params.nCubes))
+        const spacing = params.diameter / gridSize
+
+        const row = Math.floor(index / gridSize)
+        const col = index % gridSize
+
+        cube.position.x = (col - (gridSize - 1) / 2) * spacing
+        cube.position.z = (row - (gridSize - 1) / 2) * spacing
+    } else {
+        // DEFAULT RANDOM
+        cube.position.x = (Math.random() - 0.5) * params.diameter
+        cube.position.z = (Math.random() - 0.5) * params.diameter
+    }
+
     cube.position.y = height - 10
 
-    //Scale Cube
+    cube.userData.baseX = cube.position.x
+    cube.userData.baseZ = cube.position.z
+    cube.userData.isTerm1 = (params === uiObj.term1)
+    cube.userData.isTerm2 = (params === uiObj.term2)
+    cube.userData.offset = Math.random() * Math.PI * 2
 
+    //Scale Cube
     cube.scale.x = params.scale
     cube.scale.y = params.scale
     cube.scale.z = params.scale
-
 
     //Randomize cube rotation
     if(params.randomized){
@@ -112,6 +136,7 @@ const drawCube = (height, params) =>
         cube.rotation.z = Math.random() * 2 * Math.PI
         cube.rotation.y = Math.random() * 2 * Math.PI
     }
+
     // Add cube to scene
     params.group.add(cube)
 }
@@ -141,36 +166,39 @@ const group3 = new THREE.Group()
 scene.add(group3)
 
 const uiObj = {
-    sourceText: "The quick brown fox jumped over the lazy dog",
+    sourceText: "",
     saveSourceText() {
         saveSourceText()
     },
     term1: {
-        term: 'fox' ,
-        color: '#aa00ff',
+        term: 'sam' ,
+        color: '#00c3ff',
         group: group1,
-        diameter: 10,
+        diameter: 5,
         nCubes: 100,
         randomized: true,
-        scale: 1
+        scale: 1.6,
+        wireframe: false
     },
     term2: {
-        term: 'dog' ,
-        color: '#00ffaa',
+        term: 'clu' ,
+        color: '#ff8800',
         group: group2,
-        diameter: 10,
+        diameter: 15,
         nCubes: 100,
-        randomized: true,
-        scale: 1
+        randomized: false,
+        scale: 1,
+        wireframe: false
     },
     term3: {
-        term: '' ,
-        color: '',
+        term: 'grid' ,
+        color: '#ffffff',
         group: group3,
-        diameter: 10,
-        nCubes: 100,
-        randomized: true,
-        scale: 1
+        diameter: 20,
+        nCubes: 144,
+        randomized: false,
+        scale: 1.3,
+        wireframe: true
     },
     saveTerms() {
         saveTerms()
@@ -306,7 +334,7 @@ const findSearchTermInTokenizedText = (params) =>
             //call drawCube function nCubes times usinf converted height value
             for (let a = 0; a < params.nCubes; a++)
             {
-            drawCube(height, params)
+            drawCube(height, params, a)
             }
         }
     }
@@ -327,6 +355,7 @@ const clock = new THREE.Clock()
 
 const animation = () =>
 {
+
     //Return elapsedTime
     const elapsedTime = clock.getElapsedTime()
 
@@ -341,6 +370,29 @@ const animation = () =>
         camera.position.y = 5
         camera.lookAt (0,0,0)
     }
+
+    // Animate term2 cubes
+        group2.children.forEach((cube) => {
+    if (cube.userData.isTerm2) {
+        const t = elapsedTime
+
+        const amplitude = 1.5  // how far they move
+        const speed = 0.7        // how fast they move
+
+        cube.position.x = cube.userData.baseX + Math.sin(t * speed + cube.userData.offset) * amplitude
+        cube.position.z = cube.userData.baseZ + Math.cos(t * speed + cube.userData.offset) * amplitude
+    }
+})  
+
+    // Animate term1 cube rotation
+        group1.children.forEach((cube) => {
+    if (cube.userData.isTerm1) {
+        const speed = 1.5
+
+        cube.rotation.x += 0.01 * speed
+        cube.rotation.y += 0.01 * speed
+    }
+})
 
     // Renderer
     renderer.render(scene, camera)
