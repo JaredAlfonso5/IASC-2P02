@@ -99,13 +99,21 @@ const drawCube = (height, params) =>
     cube.position.z = (Math.random() - 0.5) * params.diameter
     cube.position.y = height - 10
 
-    //Randomize cube rotation
-    cube.rotation.x = Math.random() * 2 * Math.PI
-    cube.rotation.z = Math.random() * 2 * Math.PI
-    cube.rotation.y = Math.random() * 2 * Math.PI
+    //Scale Cube
 
+    cube.scale.x = params.scale
+    cube.scale.y = params.scale
+    cube.scale.z = params.scale
+
+
+    //Randomize cube rotation
+    if(params.randomized){
+        cube.rotation.x = Math.random() * 2 * Math.PI
+        cube.rotation.z = Math.random() * 2 * Math.PI
+        cube.rotation.y = Math.random() * 2 * Math.PI
+    }
     // Add cube to scene
-    scene.add(cube)
+    params.group.add(cube)
 }
 
 
@@ -123,6 +131,15 @@ const ui = new dat.GUI()
 
 let preset = {}
 
+// Groups
+
+const group1 = new THREE.Group()
+scene.add(group1)
+const group2 = new THREE.Group()
+scene.add(group2)
+const group3 = new THREE.Group()
+scene.add(group3)
+
 const uiObj = {
     sourceText: "The quick brown fox jumped over the lazy dog",
     saveSourceText() {
@@ -131,24 +148,34 @@ const uiObj = {
     term1: {
         term: 'fox' ,
         color: '#aa00ff',
+        group: group1,
         diameter: 10,
-        nCubes: 100
+        nCubes: 100,
+        randomized: true,
+        scale: 1
     },
     term2: {
         term: 'dog' ,
         color: '#00ffaa',
+        group: group2,
         diameter: 10,
-        nCubes: 100
+        nCubes: 100,
+        randomized: true,
+        scale: 1
     },
     term3: {
         term: '' ,
         color: '',
+        group: group3,
         diameter: 10,
-        nCubes: 100
+        nCubes: 100,
+        randomized: true,
+        scale: 1
     },
     saveTerms() {
         saveTerms()
-    }
+    },
+    rotateCamera: false
 
 }
 
@@ -171,6 +198,7 @@ const saveTerms = () =>
     // UI
     preset = ui.save
     visualizeFolder.hide()
+    cameraFolder.show()
     
     //Text Analysis
     findSearchTermInTokenizedText(uiObj.term1)
@@ -190,13 +218,19 @@ textFolder
     .add(uiObj, 'saveSourceText')
     .name("Save")
 
-//Terms and Visualize Folders
+//Terms, Visualize and camera Folders
 const termsFolder = ui.addFolder("Search Terms")
 const visualizeFolder = ui.addFolder("Visualize")
+const cameraFolder = ui.addFolder("Camera")
+
 
 termsFolder
     .add(uiObj.term1, 'term')
     .name("Term 1")
+
+termsFolder
+    .add(group1, 'visible')
+    .name("Term 1 Visibility")
 
 termsFolder
     .addColor(uiObj.term1, 'color')
@@ -207,12 +241,20 @@ termsFolder
     .name("Term 2")
 
 termsFolder
+    .add(group2, 'visible')
+    .name("Term 2 Visibility")
+
+termsFolder
     .addColor(uiObj.term2, 'color')
     .name("Term 2 Color")
 
 termsFolder
     .add(uiObj.term3, 'term')
     .name("Term 3")
+
+termsFolder
+    .add(group3, 'visible')
+    .name("Term 3 Visibility")
 
 termsFolder
     .addColor(uiObj.term3, 'color')
@@ -222,9 +264,14 @@ visualizeFolder
     .add(uiObj, 'saveTerms')
     .name("Visualize")
 
-// Terms and Visualize folders are hidden by default
+cameraFolder
+    .add(uiObj, 'rotateCamera')
+    .name("Turntable")
+
+// Terms, Visualize and Camera folders are hidden by default
 termsFolder.hide()
 visualizeFolder.hide()
+cameraFolder.hide()
 
 
 /****************** 
@@ -285,6 +332,15 @@ const animation = () =>
 
     //Update OrbitControls
     controls.update()
+
+    //Rotate camera
+    if (uiObj.rotateCamera)
+    {
+        camera.position.x = Math.sin(elapsedTime * 0.1) * 20
+        camera.position.z = Math.cos(elapsedTime * 0.1) * 20
+        camera.position.y = 5
+        camera.lookAt (0,0,0)
+    }
 
     // Renderer
     renderer.render(scene, camera)
