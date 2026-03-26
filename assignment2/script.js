@@ -175,7 +175,7 @@ const uiObj = {
         color: '#00c3ff',
         group: group1,
         diameter: 5,
-        nCubes: 100,
+        nCubes: 25,
         randomized: true,
         scale: 1.6,
         wireframe: false
@@ -185,7 +185,7 @@ const uiObj = {
         color: '#ff8800',
         group: group2,
         diameter: 15,
-        nCubes: 100,
+        nCubes: 50,
         randomized: false,
         scale: 1,
         wireframe: false
@@ -195,7 +195,7 @@ const uiObj = {
         color: '#ffffff',
         group: group3,
         diameter: 20,
-        nCubes: 144,
+        nCubes: 100,
         randomized: false,
         scale: 1.3,
         wireframe: true
